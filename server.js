@@ -16,7 +16,14 @@ const querySchema = await readFile('./schema.graphql', 'utf-8');
 const apolloServer = new ApolloServer({ typeDefs: querySchema, resolvers });
 await apolloServer.start();
 
-app.use('/graphql', apolloExpressMiddleWare(apolloServer));
+app.use(
+  '/graphql',
+  apolloExpressMiddleWare(apolloServer, {
+    context: (data) => ({
+      auth: data.req.auth,
+    }),
+  })
+);
 
 app.post('/login', handleLogin);
 

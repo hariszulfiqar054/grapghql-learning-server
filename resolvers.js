@@ -10,7 +10,14 @@ import { GraphQLError } from 'graphql';
 
 export const resolvers = {
   Query: {
-    jobs: () => getJobs(),
+    jobs: (_, _v, { auth }) => {
+      if (!auth) {
+        throw new GraphQLError(`Unauthorized`, {
+          extensions: { status: 'UNAUTHORIZED' },
+        });
+      }
+      return getJobs();
+    },
     job: async (_, { id }) => {
       const job = await getJob(id);
       if (!job) {
